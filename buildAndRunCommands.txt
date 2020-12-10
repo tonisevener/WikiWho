@@ -1,0 +1,4 @@
+docker build --tag wikiwhotest .
+docker run --publish 3333:3333 wikiwhotest
+
+then in browser, go to http://localhost:3333/
