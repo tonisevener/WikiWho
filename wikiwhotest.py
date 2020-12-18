@@ -3,6 +3,7 @@ from flask_restful import Resource, Api
 import requests
 from wikiwho import Wikiwho
 from utils import iter_rev_tokens
+from whoColorHandler import WhoColorHandler
 
 app = Flask(__name__)
 api = Api(app)
@@ -78,17 +79,20 @@ class Greeting (Resource):
 
 			return wikiwho
 	def get(self):
-		page_id = 47189019
+		handler = WhoColorHandler('Puppy_cat')
+		response = handler.handle()
+		return response
+		# page_id = 47189019
 
-		wikiwho = self.testing(page_id, None)
-		while (wikiwho.rvcontinue is not None):
-			wikiwho = self.testing(page_id, wikiwho)
+		# wikiwho = self.testing(page_id, None)
+		# while (wikiwho.rvcontinue is not None):
+		# 	wikiwho = self.testing(page_id, wikiwho)
 
-		l = []
-		for token in iter_rev_tokens(wikiwho.revisions[wikiwho.ordered_revisions[-1]]):
-			d = {"str": str(token.value), "o_rev_id": token.origin_rev_id, "token_id": token.token_id}
-			l.append(d)
-		return l
+		# l = []
+		# for token in iter_rev_tokens(wikiwho.revisions[wikiwho.ordered_revisions[-1]]):
+		# 	d = {"str": str(token.value), "o_rev_id": token.origin_rev_id, "token_id": token.token_id}
+		# 	l.append(d)
+		# return l
 
 api.add_resource(Greeting, '/') # Route_1
 

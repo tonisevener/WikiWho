@@ -1,5 +1,5 @@
-from WhoColor.utils import WikipediaRevText, WikiWhoRevContent
-from WhoColor.parser import WikiMarkupParser
+from whoColorUtils import WikipediaRevText, WikiWhoRevContent
+from whoColorParser import WikiMarkupParser
 
 
 class WhoColorHandler(object):
@@ -19,6 +19,7 @@ class WhoColorHandler(object):
     def handle(self):
         # get rev wiki text from wp
         wp_rev_text_obj = WikipediaRevText(self.page_title, self.page_id, self.rev_id, self.language)
+
         # {'page_id': , 'namespace': , 'rev_id': , 'rev_text': }
         rev_data = wp_rev_text_obj.get_rev_wiki_text()
         if rev_data is None or 'error' in rev_data or "-1" in rev_data:
@@ -34,7 +35,6 @@ class WhoColorHandler(object):
         # revisions {rev_id: [timestamp, parent_id, class_name/editor, editor_name]}
         # tokens [[conflict_score, str, o_rev_id, in, out, editor/class_name, age]]
         # biggest conflict score (int)
-
         revisions = ww_rev_content_obj.get_revisions_data()
         editor_names_dict = ww_rev_content_obj.get_editor_names(revisions)
         tokens, biggest_conflict_score = ww_rev_content_obj.get_tokens_data(revisions, editor_names_dict)
@@ -48,7 +48,8 @@ class WhoColorHandler(object):
         wikiwho_data = {'revisions': revisions,
                         'tokens': ww_rev_content_obj.convert_tokens_data(tokens),
                         'biggest_conflict_score': biggest_conflict_score}
-        return extended_html, p.present_editors, wikiwho_data
+        singleResponse = {'extended_html': extended_html, 'present_editors': p.present_editors, 'wikiwho_data': wikiwho_data}
+        return singleResponse
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass

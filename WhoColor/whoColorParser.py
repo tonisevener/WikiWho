@@ -7,7 +7,7 @@
 """
 import re
 import io
-from .special_markups import SPECIAL_MARKUPS, REGEX_HELPER_PATTERN
+from whoColorSpecial_markups import SPECIAL_MARKUPS, REGEX_HELPER_PATTERN
 
 
 class WikiMarkupParser(object):
