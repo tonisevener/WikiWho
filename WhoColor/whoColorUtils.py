@@ -44,14 +44,19 @@ class WikipediaRevText(object):
             if self.rev_id is not None:
                 params.update({'rvstartid': self.rev_id})  # , 'rvendid': rev_id})
         else:
-            params = {'action': 'parse', 'title': self.page_title,
-                      'format': 'json', 'text': wiki_text, 'prop': 'text'}
+            # https://en.wikipedia.org/api/rest_v1/transform/wikitext/to/mobile-html/Mount_Takahe
+            data = {'url': 'https://en.wikipedia.org/api/rest_v1/transform/wikitext/to/mobile-html/Puppy_cat'}
+            params = {'wikitext': wiki_text}
         data['data'] = params
         return data
 
     def _make_request(self, data):
         response = requests.post(**data).json()
         return response
+
+    def _make_request_str(self, data):
+        response = requests.post(**data)
+        return str(response.content.decode('utf-8'))
 
     def get_rev_wiki_text(self):
         """
@@ -90,12 +95,9 @@ class WikipediaRevText(object):
             raise Exception('Please provide title of the article.')
 
         data = self._prepare_request(wiki_text)
-        response = self._make_request(data)
+        response = self._make_request_str(data)
 
-        if 'error' in response:
-            return response
-
-        return response['parse']['text']['*']
+        return response
 
 
 class WikipediaUser(object):
