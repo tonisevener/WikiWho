@@ -79,20 +79,20 @@ class Greeting (Resource):
 
 			return wikiwho
 	def get(self):
+		page_id = 47189019
+
+		wikiwho = self.testing(page_id, None)
+		while (wikiwho.rvcontinue is not None):
+			wikiwho = self.testing(page_id, wikiwho)
+
+		tokens = []
+		for token in iter_rev_tokens(wikiwho.revisions[wikiwho.ordered_revisions[-1]]):
+			d = {"str": str(token.value), "o_rev_id": token.origin_rev_id, "token_id": token.token_id, "editor": str(token.origin_editor), "out": token.outbound, "in": token.inbound}
+			tokens.append(d)
+		
 		handler = WhoColorHandler('Puppy_cat')
-		response = handler.handle()
+		response = handler.handle(tokens)
 		return response
-		# page_id = 47189019
-
-		# wikiwho = self.testing(page_id, None)
-		# while (wikiwho.rvcontinue is not None):
-		# 	wikiwho = self.testing(page_id, wikiwho)
-
-		# l = []
-		# for token in iter_rev_tokens(wikiwho.revisions[wikiwho.ordered_revisions[-1]]):
-		# 	d = {"str": str(token.value), "o_rev_id": token.origin_rev_id, "token_id": token.token_id}
-		# 	l.append(d)
-		# return l
 
 api.add_resource(Greeting, '/') # Route_1
 

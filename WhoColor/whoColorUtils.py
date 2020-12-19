@@ -218,11 +218,12 @@ class WikiWhoRevContent(object):
 
         return editor_names_dict
 
-    def get_tokens_data(self, revisions, editor_names_dict):
-        data = self._prepare_request()
-        response = self._make_request(data)
-        _, rev_data = response['revisions'][0].popitem()
-        tokens = rev_data['tokens']
+    def get_tokens_data(self, revisions, editor_names_dict, tokens=None):
+        if tokens is None:
+            data = self._prepare_request()
+            response = self._make_request(data)
+            _, rev_data = response['revisions'][0].popitem()
+            tokens = rev_data['tokens']
 
         # set editor and class names and calculate conflict score for each token
         # if registered user, class name is editor id
