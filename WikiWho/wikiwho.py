@@ -620,7 +620,6 @@ class Wikiwho:
 					word_curr.value = word
 					word_curr.token_id = self.token_id
 					word_curr.origin_rev_id = self.revision_curr.id
-					word_curr.origin_editor = self.revision_curr.editor
 					word_curr.last_rev_id = self.revision_curr.id
 
 					sentence_curr.words.append(word_curr)
@@ -667,7 +666,6 @@ class Wikiwho:
 							word_curr.value = word
 							word_curr.token_id = self.token_id
 							word_curr.origin_rev_id = self.revision_curr.id
-							word_curr.editor = self.revision_curr.editor
 							word_curr.last_rev_id = self.revision_curr.id
 
 							sentence_curr.words.append(word_curr)
@@ -683,7 +681,6 @@ class Wikiwho:
 					word_curr.value = word
 					word_curr.token_id = self.token_id
 					word_curr.origin_rev_id = self.revision_curr.id
-					word_curr.editor = self.revision_curr.editor
 					word_curr.last_rev_id = self.revision_curr.id
 					sentence_curr.words.append(word_curr)
 

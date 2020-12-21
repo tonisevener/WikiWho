@@ -16,7 +16,7 @@ class WhoColorHandler(object):
     def __enter__(self):
         return self
 
-    def handle(self, tokens):
+    def handle(self):
         # get rev wiki text from wp
         wp_rev_text_obj = WikipediaRevText(self.page_title, self.page_id, self.rev_id, self.language)
 
@@ -37,7 +37,7 @@ class WhoColorHandler(object):
         # biggest conflict score (int)
         revisions = ww_rev_content_obj.get_revisions_data()
         editor_names_dict = ww_rev_content_obj.get_editor_names(revisions)
-        tokens, biggest_conflict_score = ww_rev_content_obj.get_tokens_data(revisions, editor_names_dict, tokens)
+        tokens, biggest_conflict_score = ww_rev_content_obj.get_tokens_data(revisions, editor_names_dict)
 
         # annotate authorship data to wiki text
         # if registered user, class name is editor id

@@ -15,7 +15,6 @@ class Word(object):
 		self.token_id = 0  # Sequential id (position) in article. Unique per article.
 		self.value = ''  # The word (simple text).
 		self.origin_rev_id = 0  # Revision id where the word was included.
-		self.origin_editor = 0 # Editor of origin_rev_id.
 		self.outbound = []
 		self.inbound = []
 		self.last_rev_id = 0  # Revision id where the word was last time used.
