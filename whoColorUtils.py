@@ -54,8 +54,8 @@ class WikipediaRevText(object):
         response = requests.post(**data).json()
         return response
 
-    def _make_request_str(self, data):
-        response = requests.post(**data)
+    def _make_request_str(self, data, headers):
+        response = requests.post(**data, headers=headers)
         return str(response.content.decode('utf-8'))
 
     def get_rev_wiki_text(self):
@@ -95,7 +95,8 @@ class WikipediaRevText(object):
             raise Exception('Please provide title of the article.')
 
         data = self._prepare_request(wiki_text)
-        response = self._make_request_str(data)
+        headers = {'output-mode': 'content'}
+        response = self._make_request_str(data, headers=headers)
 
         return response
 
