@@ -45,7 +45,7 @@ class WikipediaRevText(object):
                 params.update({'rvstartid': self.rev_id})  # , 'rvendid': rev_id})
         else:
             # https://en.wikipedia.org/api/rest_v1/transform/wikitext/to/mobile-html/Mount_Takahe
-            data = {'url': 'https://en.wikipedia.org/api/rest_v1/transform/wikitext/to/mobile-html/Puppy_cat'}
+            data = {'url': 'https://en.wikipedia.org/api/rest_v1/transform/wikitext/to/mobile-html/{}'.format(self.page_title)}
             params = {'wikitext': wiki_text}
         data['data'] = params
         return data

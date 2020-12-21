@@ -78,8 +78,8 @@ class ArticleAnalyzer (Resource):
 				wikiwho.rvcontinue = None
 
 			return wikiwho
-	def get(self):
-		handler = WhoColorHandler('Puppy_cat')
+	def get(self, title):
+		handler = WhoColorHandler(page_title=title)
 		response = handler.handle()
 		return response
 		# page_id = 47189019
@@ -94,7 +94,7 @@ class ArticleAnalyzer (Resource):
 		# 	l.append(d)
 		# return l
 
-api.add_resource(ArticleAnalyzer, '/') # Route_1
+api.add_resource(ArticleAnalyzer, '/whocolor/<string:title>/') # Route_1
 
 if __name__ == '__main__':
 	app.run('0.0.0.0','3333')
