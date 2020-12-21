@@ -8,8 +8,8 @@ from whoColorHandler import WhoColorHandler
 app = Flask(__name__)
 api = Api(app)
 
-class Greeting (Resource):
-	def testing(self, page_id, wikiwho):
+class ArticleAnalyzer (Resource):
+	def analyseHistory(self, page_id, wikiwho):
 
 		params = {'pageids': page_id, 'action': 'query', 'prop': 'revisions',
 				  'rvprop': 'content|ids|timestamp|sha1|comment|flags|user|userid',
@@ -84,9 +84,9 @@ class Greeting (Resource):
 		return response
 		# page_id = 47189019
 
-		# wikiwho = self.testing(page_id, None)
+		# wikiwho = self.analyseHistory(page_id, None)
 		# while (wikiwho.rvcontinue is not None):
-		# 	wikiwho = self.testing(page_id, wikiwho)
+		# 	wikiwho = self.analyseHistory(page_id, wikiwho)
 
 		# l = []
 		# for token in iter_rev_tokens(wikiwho.revisions[wikiwho.ordered_revisions[-1]]):
@@ -94,7 +94,7 @@ class Greeting (Resource):
 		# 	l.append(d)
 		# return l
 
-api.add_resource(Greeting, '/') # Route_1
+api.add_resource(ArticleAnalyzer, '/') # Route_1
 
 if __name__ == '__main__':
 	app.run('0.0.0.0','3333')
