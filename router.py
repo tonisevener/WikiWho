@@ -4,9 +4,13 @@ import requests
 from wikiwho import Wikiwho
 from utils import iter_rev_tokens
 from whoColorHandler import WhoColorHandler
+import threading
 
 app = Flask(__name__)
 api = Api(app)
+
+cache = {}
+isCaching = {}
 
 class ArticleAnalyzer (Resource):
 	def analyseHistory(self, page_id, wikiwho):
@@ -78,10 +82,24 @@ class ArticleAnalyzer (Resource):
 				wikiwho.rvcontinue = None
 
 			return wikiwho
-	def get(self, title):
+
+	def kickoffWhoColor(self, title):
 		handler = WhoColorHandler(page_title=title)
 		response = handler.handle()
-		return response
+		cache[title] = response
+		isCaching[title] = False
+
+	def get(self, title):
+		if cache.get(title) is not None:
+			return cache[title]
+		elif isCaching.get(title):
+			return "Is caching"
+		else:
+			isCaching[title] = True
+			download_thread = threading.Thread(target=self.kickoffWhoColor, name="Downloader", args=(title,))
+			download_thread.start()
+			return "Not cached, kicked off caching"
+
 		# page_id = 47189019
 
 		# wikiwho = self.analyseHistory(page_id, None)
