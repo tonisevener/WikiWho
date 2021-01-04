@@ -6,6 +6,7 @@
 """
 import requests
 import hashlib
+import re
 from dateutil import parser
 from datetime import datetime
 
@@ -32,6 +33,10 @@ class WikipediaRevText(object):
         self.rev_id = rev_id
         self.language = language
 
+    def splitString(self, strng, sep, pos):
+        strng = strng.split(sep)
+        return sep.join(strng[:pos]), sep.join(strng[pos:])
+
     def _prepare_request(self, wiki_text=None):
         data = {'url': 'https://{}.wikipedia.org/w/api.php'.format(self.language)}
         if wiki_text is None:
@@ -46,7 +51,8 @@ class WikipediaRevText(object):
         else:
             # https://en.wikipedia.org/api/rest_v1/transform/wikitext/to/mobile-html/Mount_Takahe
             data = {'url': 'https://en.wikipedia.org/api/rest_v1/transform/wikitext/to/mobile-html/{}'.format(self.page_title)}
-            params = {'wikitext': wiki_text}
+            firstTwoSectionsWikiText = self.splitString(wiki_text,"\n\n==<span",3)[0]
+            params = {'wikitext': firstTwoSectionsWikiText}
         data['data'] = params
         return data
 
@@ -97,8 +103,16 @@ class WikipediaRevText(object):
         data = self._prepare_request(wiki_text)
         headers = {'output-mode': 'content'}
         response = self._make_request_str(data, headers=headers)
+        htmlBeforeReferencesSection = self.splitString(response, "<div class=\"mw-references-wrap",1)
+        
+        #find all token ids and pull last one
+        tokens = re.findall('id=\"token-([0-9]+)\">', htmlBeforeReferencesSection[0])
 
-        return response
+        if len(tokens) > 0:
+            lastToken = tokens[-1]
+            return (response, lastToken)
+        else:
+            return (response, None)
 
 
 class WikipediaUser(object):

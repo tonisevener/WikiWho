@@ -43,10 +43,16 @@ class WhoColorHandler(object):
         # if registered user, class name is editor id
         p = WikiMarkupParser(rev_data['rev_text'], tokens)
         p.generate_extended_wiki_markup()
-        extended_html = wp_rev_text_obj.convert_wiki_text_to_html(p.extended_wiki_text)
+        wikitextToHTMLResponse = wp_rev_text_obj.convert_wiki_text_to_html(p.extended_wiki_text)
+        extended_html = wikitextToHTMLResponse[0]
+        lastToken = wikitextToHTMLResponse[1]
+
+        prunedTokens = tokens[:int(lastToken)] if lastToken is not None else tokens
+
+        # get last token before references section to limit payload size
 
         wikiwho_data = {'revisions': revisions,
-                        'tokens': ww_rev_content_obj.convert_tokens_data(tokens),
+                        'tokens': ww_rev_content_obj.convert_tokens_data(prunedTokens),
                         'biggest_conflict_score': biggest_conflict_score}
         singleResponse = {'extended_html': extended_html, 'present_editors': p.present_editors, 'wikiwho_data': wikiwho_data}
         return singleResponse
