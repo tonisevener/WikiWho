@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, abort
 from flask_restful import Resource, Api
 import requests
 from wikiwho import Wikiwho
@@ -83,22 +83,60 @@ class ArticleAnalyzer (Resource):
 
 			return wikiwho
 
-	def kickoffWhoColor(self, title):
+	def kickoffWhoColor(self, title, revID):
 		handler = WhoColorHandler(page_title=title)
 		response = handler.handle()
-		cache[title] = response
+		cache[title] = (revID, response)
 		isCaching[title] = False
 
-	def get(self, title):
+	def getLatestRevID(self, title):
+		#prepare request
+		data = {'url': 'https://en.wikipedia.org/w/api.php'}
+		params = {'action': 'query', 'prop': 'revisions', 'rvprop': 'ids|timestamp', 'rvlimit': '1', 'format': 'json', 'titles': title, 'rvdir': 'older'}
+		data['data'] = params
+		#make request
+		response = requests.post(**data).json()
+
+		if 'error' in response:
+			return None
+		pages = response['query']['pages']
+		if '-1' in pages:
+			return None
+		for page_id, page in response['query']['pages'].items():
+			namespace = page['ns']
+			revisions = page.get('revisions')
+			if revisions is None:
+				return None
+			else:
+				return revisions[0]['revid']
+
+	def cachedResponseForTitleAndRevision(self, title, revID):
 		if cache.get(title) is not None:
-			return cache[title]
-		elif isCaching.get(title):
-			return "Is caching"
+			cachedTuple = cache[title]
+			if cachedTuple[0] == revID:
+				return cachedTuple[1]
+			else:
+				return None
 		else:
-			isCaching[title] = True
-			download_thread = threading.Thread(target=self.kickoffWhoColor, name="Downloader", args=(title,))
-			download_thread.start()
-			return "Not cached, kicked off caching"
+			return None
+
+	def get(self, title):
+
+		latestRevID = self.getLatestRevID(title)
+		if latestRevID is None:
+			abort(500, 'Failure getting latest revision ID')
+		else:
+			cachedResponse = self.cachedResponseForTitleAndRevision(title, latestRevID)
+			if cachedResponse is not None:
+				return cachedResponse
+			elif isCaching.get(title):
+				abort(500, 'Article is currently caching.')
+			else:
+				#TODO: if there's some sort of exception on a background thread, be sure to reset isCaching somehow
+				isCaching[title] = True
+				download_thread = threading.Thread(target=self.kickoffWhoColor, name="Downloader", args=(title,latestRevID,))
+				download_thread.start()
+				abort(500, 'Article not cached, kicking off caching.')
 
 		# page_id = 47189019
 
